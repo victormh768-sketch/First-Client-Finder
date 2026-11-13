@@ -1,0 +1,78 @@
+# Live Probe: consulta las fuentes públicas autorizadas desde un runner de GitHub (que sí tiene internet),
+# genera QUALITY_REPORT.md y los archivos de revisión, y los sube como «Artifact» de la ejecución.
+#
+# · Solo se lanza a mano: Actions → «Live probe» → Run workflow. No hay programación automática.
+# · No usa Supabase, no necesita secretos ni claves, no escribe en el repositorio y solo tiene permisos de lectura.
+# · No cambies el nombre de este archivo: el contador de ejecuciones recientes lo usa para respetar los límites
+#   de las fuentes (Remotive ≤ 4 peticiones/día, Jobicy ≤ 1/hora).
+name: Live probe
+
+on:
+  workflow_dispatch:
+    inputs:
+      sources:
+        description: 'Fuentes separadas por comas (hn-freelance, remotive, jobicy)'
+        type: string
+        default: 'hn-freelance,remotive,jobicy'
+      links:
+        description: 'Comprobar que los enlaces originales siguen existiendo'
+        type: boolean
+        default: true
+      link_checks:
+        description: 'Máximo de enlaces a comprobar por sitio (0-100)'
+        type: string
+        default: '30'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: live-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Cuenta las ejecuciones anteriores de este workflow (sin contar la actual) para no superar los límites
+      # publicados por las fuentes. Si la consulta falla, el informe lo avisa y NO bloquea la prueba.
+      - name: Contar ejecuciones recientes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          count() {
+            gh api -X GET "repos/$REPO/actions/workflows/live-probe.yml/runs" -f per_page=100 -f created=">=$1" \
+              --jq '[.workflow_runs[] | select(.id != (env.RUN_ID | tonumber))] | length' 2>/dev/null || true
+          }
+          echo "PROBE_RUNS_LAST_1H=$(count "$(date -u -d '1 hour ago' +%Y-%m-%dT%H:%M:%SZ)")" >> "$GITHUB_ENV"
+          echo "PROBE_RUNS_LAST_24H=$(count "$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)")" >> "$GITHUB_ENV"
+
+      - name: Ejecutar Live Probe
+        env:
+          INPUT_SOURCES: ${{ inputs.sources }}
+          INPUT_LINKS: ${{ inputs.links }}
+          INPUT_LINK_CHECKS: ${{ inputs.link_checks }}
+        run: |
+          FLAGS=()
+          if [ "$INPUT_LINKS" != "true" ]; then FLAGS+=(--no-links); fi
+          node scripts/live-probe.mjs --sources "$INPUT_SOURCES" --link-checks "$INPUT_LINK_CHECKS" "${FLAGS[@]}" --out report
+
+      # Se sube aunque alguna fuente falle, para poder ver qué pasó.
+      - name: Subir informe
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-probe-report-${{ github.run_number }}
+          path: report/
+          if-no-files-found: warn
+          retention-days: 30

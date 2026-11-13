@@ -1,0 +1,11 @@
+{
+  "name": "first-client-finder",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Plataforma para que jóvenes emprendedores consigan su primer cliente",
+  "scripts": {
+    "dev": "npx serve . -l 3000",
+    "check": "node scripts/check.mjs"
+  }
+}
