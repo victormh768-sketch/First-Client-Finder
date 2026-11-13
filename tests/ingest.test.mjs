@@ -239,3 +239,10 @@ test('registro: ninguna fuente que requiera aprobación nace activada', () => {
   }
   assert.ok(SOURCES.every((s) => s.adapter && typeof s.adapter.fetchItems === 'function'));
 });
+
+test('HN: un hilo antiguo no se importa como si fuera actual', async () => {
+  const f = async (url) => (url.includes('author_whoishiring')
+    ? json({ hits: [{ objectID: '900', title: 'Ask HN: Freelancer? Seeking freelancer? (October 2025)', created_at: iso(400) }] })
+    : { ok: false, status: 404, json: async () => ({}) });
+  await assert.rejects(runSource({ source: getSource('hn-freelance'), now: NOW, fetch: f }), (e) => e.code === 'STALE_SOURCE' && /no hay hilo vigente/.test(e.message));
+});

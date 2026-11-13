@@ -32,6 +32,14 @@ export function classifyType(item, intent, budget = null) {
 
   if (COLLAB.test(t) && !budget && !PAY.test(t)) return out('collaboration', 0.7, ['partner_or_collaborator_wanted', 'no_payment_stated']);
 
+  // La propia plataforma etiqueta la oferta como «freelance»: el lenguaje genérico de los tablones («responsibilities»,
+  // «requirements») no basta para tratarla como empleo. Solo lo hacen señales fuertes de empleo (jornada completa, sueldo, beneficios).
+  const strongJob = sig.includes('job:full_time') || sig.includes('job:job_perks');
+  if (/^freelance$/i.test(item.jobType || '') && !strongJob) {
+    const bounded = BOUNDED.test(t) && !ONGOING.test(t);
+    return out(bounded ? 'one_off' : 'freelance', Math.max(intent.confidence, 0.6), ['platform_freelance_label']);
+  }
+
   if (intent.kind === 'job') {
     const why = ['job_posting_language'];
     if (contract) why.push('platform_contract_role');

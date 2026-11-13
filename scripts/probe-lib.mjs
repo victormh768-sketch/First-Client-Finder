@@ -21,6 +21,7 @@ export const isPossible = (o) => o.beginner?.level === 'posible';
 const hasFlag = (o, c) => (o.quality?.flags || []).some((f) => f.code === c);
 
 export function classifyError(e) {
+  if (e?.code === 'STALE_SOURCE') return 'sin_datos_vigentes';
   const code = e?.cause?.code || e?.code || '';
   const msg = String(e?.message || e);
   if (/ENOTFOUND|ECONNREFUSED|ETIMEDOUT|EAI_AGAIN|ECONNRESET|UND_ERR|fetch failed|network|timed out|aborted/i.test(code + ' ' + msg)) return 'sin_red';

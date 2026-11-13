@@ -120,3 +120,17 @@ test('pedidos de banner, póster o plantilla en un tablón con etiqueta freelanc
     assert.equal(o.opportunityType, 'one_off', what);
   }
 });
+
+test('etiqueta freelance de la plataforma + lenguaje genérico de tablón = freelance, no empleo', () => {
+  const o = E('Freelance Writer', 'We are looking for a writer. Responsibilities: write articles. Requirements: good English. Apply here.', { jobType: 'freelance' });
+  assert.equal(o.opportunityType, 'freelance');
+  assert.deepEqual(o.typeInfo.why, ['platform_freelance_label']);
+});
+test('etiqueta freelance pero con jornada completa, sueldo o beneficios sigue siendo empleo', () => {
+  const o = E('Freelance Writer', 'Full-time position with salary and health insurance. Responsibilities and requirements below.', { jobType: 'freelance' });
+  assert.equal(o.opportunityType, 'job');
+});
+test('la etiqueta contract NO se trata como freelance por sí sola', () => {
+  const o = E('Customer Service Representative', 'We are looking for a representative. Responsibilities and requirements below. Join our team.', { jobType: 'contract' });
+  assert.equal(o.opportunityType, 'job');
+});

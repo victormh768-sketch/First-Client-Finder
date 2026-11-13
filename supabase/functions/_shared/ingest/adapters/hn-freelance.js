@@ -1,7 +1,12 @@
 // Hacker News · hilo mensual «Ask HN: Freelancer? Seeking freelancer?» (publicado por whoishiring).
 // API: buscador Algolia de HN (https://hn.algolia.com/api), gratuita y sin clave.
 // Solo se leen comentarios de nivel superior; no se guarda el nombre de usuario del autor.
-import { stripHtml, clip } from '../text.js';
+import { stripHtml, clip, daysBetween } from '../text.js';
+
+// La fuente no tiene datos vigentes (p. ej. el hilo más reciente es de hace meses). No se importa nada antiguo como si fuera actual.
+export class StaleSourceError extends Error {
+  constructor(message) { super(message); this.name = 'StaleSourceError'; this.code = 'STALE_SOURCE'; }
+}
 
 const BASE = 'https://hn.algolia.com/api/v1';
 const THREAD_RE = /ask hn: freelancer\? seeking freelancer\?/i;
@@ -29,9 +34,13 @@ function hintFromText(text) {
 
 export const adapter = {
   id: 'hn-freelance',
-  async fetchItems({ fetch: f, config = {} }) {
+  async fetchItems({ fetch: f, config = {}, now = new Date() }) {
     const maxPages = config.maxPages ?? 4;
     const thread = await findLatestThread(f);
+    const threadAge = daysBetween(thread.createdAt, now);
+    if (threadAge > (config.maxThreadAgeDays ?? 45)) {
+      throw new StaleSourceError(`El hilo más reciente encontrado es «${thread.title}» (${String(thread.createdAt).slice(0, 10)}, hace ${threadAge} días): no hay hilo vigente`);
+    }
     const items = [];
     let topLevel = 0;
     for (let page = 0; page < maxPages; page++) {

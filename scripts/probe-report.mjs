@@ -23,7 +23,7 @@ const fmtBudget = (b) => (b ? `${b.min}${b.max !== b.min ? '–' + b.max : ''} $
 export const TYPE_ES = { freelance: 'Freelance', one_off: 'Proyecto puntual', job: 'Empleo', collaboration: 'Colaboración', not_relevant: 'No relevante' };
 const LEVEL_ES = { apta: 'Apta', posible: 'Posible', no_apta: 'No apta' };
 const DECISION_ES = { imported: 'pendiente de revisión', expired: 'caducada', duplicate: 'duplicada', link_gone: 'enlace roto' };
-const WHY_ES = { direct_request: 'pide contratar de forma directa', bounded_deliverable: 'entregable acotado', ongoing_work: 'trabajo continuo', scope_not_bounded: 'alcance no acotado', job_posting_language: 'lenguaje de oferta de empleo', platform_contract_role: 'etiqueta contract/freelance de un tablón de empleo', offers_own_services: 'ofrece sus propios servicios', partner_or_collaborator_wanted: 'busca socio o colaborador', no_payment_stated: 'sin pago indicado', no_hiring_intent: 'no se detecta intención de contratar' };
+const WHY_ES = { direct_request: 'pide contratar de forma directa', bounded_deliverable: 'entregable acotado', ongoing_work: 'trabajo continuo', scope_not_bounded: 'alcance no acotado', platform_freelance_label: 'la plataforma lo etiqueta como freelance', job_posting_language: 'lenguaje de oferta de empleo', platform_contract_role: 'etiqueta contract/freelance de un tablón de empleo', offers_own_services: 'ofrece sus propios servicios', partner_or_collaborator_wanted: 'busca socio o colaborador', no_payment_stated: 'sin pago indicado', no_hiring_intent: 'no se detecta intención de contratar' };
 const decisionOf = (r) => DECISION_ES[r.decision] || (r.decision?.startsWith('skipped') ? 'no importada' : r.decision);
 const whyOf = (r) => (r.typeWhy || []).map((c) => WHY_ES[c] || c).join('; ');
 const link = (u) => (u ? `[abrir](${u})` : '—');
@@ -44,7 +44,7 @@ const reasons = (rows) => rows.map((r, i) => {
 
 // ───────── QUALITY_REPORT.md ─────────
 const failed = (r) => r.status !== 'ok';
-const STATUS_ES = { sin_red: 'sin conexión desde este equipo', bloqueada: 'bloqueada (sin vía autorizada)', omitida_por_limite: 'omitida para respetar el límite de peticiones', error: 'error', ok: 'ok' };
+const STATUS_ES = { sin_datos_vigentes: 'la fuente respondió pero no tiene datos vigentes', sin_red: 'sin conexión desde este equipo', bloqueada: 'bloqueada (sin vía autorizada)', omitida_por_limite: 'omitida para respetar el límite de peticiones', error: 'error', ok: 'ok' };
 const statusText = (s) => STATUS_ES[s] || (s.startsWith('http_') ? `la fuente respondió HTTP ${s.slice(5)}` : s);
 
 export function renderRequests(requests) {

@@ -33,6 +33,14 @@ test('HTTP 429 y 403 se informan con su código y no se reintentan', async () =>
   assert.equal(calls, 1, 'una sola petición: no hay reintentos');
   assert.equal(r.requests['remotive.com'].status['429'], 1);
 });
+test('hilo de HN caducado: estado sin_datos_vigentes, no cifras', async () => {
+  const f = async (u) => ok({ hits: [{ objectID: '9', title: 'Ask HN: Freelancer? Seeking freelancer? (October 2025)', created_at: '2025-10-01T15:01:06Z' }] });
+  const r = await runProbe({ ids: ['hn-freelance'], fetchImpl: f, sleep: noSleep, startedAt: NOW, checkLinks: false });
+  assert.equal(r.results[0].status, 'sin_datos_vigentes');
+  assert.equal(r.results[0].summary, undefined);
+  assert.equal(r.exitCode, 1);
+  assert.match(r.files['QUALITY_REPORT.md'], /no tiene datos vigentes/);
+});
 test('classifyError distingue red de otros errores', () => {
   assert.equal(classifyError(new Error('fetch failed')), 'sin_red');
   assert.equal(classifyError(new Error('boom')), 'error');
