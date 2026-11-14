@@ -13,6 +13,7 @@ import { renderProposal } from './views/proposal.js';
 import { renderProfile } from './views/profile.js';
 import { renderPlans } from './views/plans.js';
 import { renderAdmin } from './views/admin.js';
+import { renderCompany } from './views/company.js';
 
 const NAV = [
   { id: 'dashboard', icon: 'home', render: renderDashboard },
@@ -21,14 +22,14 @@ const NAV = [
   { id: 'proposal', icon: 'file', render: renderProposal },
   { id: 'profile', icon: 'user', render: renderProfile },
 ];
-const EXTRA = { plans: renderPlans, admin: renderAdmin }; // 'admin' no aparece en la navegación
+const EXTRA = { plans: renderPlans, admin: renderAdmin, company: renderCompany }; // 'admin' no aparece en la navegación
 
 let lastRoute = null;
 
 function shell(route, view) {
   const st = store.getState();
   const pro = store.isPro();
-  const active = route === 'plans' || route === 'admin' ? 'profile' : route;
+  const active = route === 'plans' || route === 'admin' || route === 'company' ? 'profile' : route;
   const link = (n, cls) => h('a', { href: '#/' + n.id, class: `${cls}${active === n.id ? ' active' : ''}`, 'aria-current': active === n.id ? 'page' : null },
     icon(n.icon, 22), h('span', null, t('nav.' + n.id)));
 

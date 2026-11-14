@@ -4,6 +4,7 @@ import { t, getLang, loc } from './i18n.js';
 import * as store from './store.js';
 import { beginnerFit, skillMatch } from './scoring.js';
 import { ctx, navigate } from './ctx.js';
+import { interestSection } from './interest.js';
 
 export const chip = (text, cls = '') => h('span', { class: `chip ${cls}` }, text);
 export const badge = (text, cls = '') => h('span', { class: `badge ${cls}` }, text);
@@ -128,10 +129,11 @@ export function openOppSheet(o) {
           progressBar(f.pts, f.max),
           h('p', { class: 'muted small' }, f.reason))),
         h('p', { class: 'muted small disclaimer' }, icon('info', 14), ' ', t('fit.disclaimer'))),
+      o.ownerId ? interestSection(o) : null,
       h('div', { class: 'source' }, h('h4', null, t('opp.source')),
         url
           ? h('a', { class: 'link', href: url, target: '_blank', rel: 'noopener noreferrer' }, o.sourceName || url, ' ', icon('external', 14))
-          : h('p', { class: 'muted small' }, o.isDemo ? t('opp.source.demo') : t('opp.source.none')),
+          : h('p', { class: 'muted small' }, o.isDemo ? t('opp.source.demo') : o.ownerId ? t('int.source') : t('opp.source.none')),
         h('p', { class: 'muted small' }, t('opp.age.notice'))),
       h('div', { class: 'row wrap sticky-actions' },
         tr && tr.status !== 'saved'

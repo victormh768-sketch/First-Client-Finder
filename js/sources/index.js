@@ -35,6 +35,7 @@ export function normalize(raw) {
     lastCheckedAt: raw.lastCheckedAt || null,
     reasons: Array.isArray(raw.reasons) ? raw.reasons.map(String) : [],
     estimated: Array.isArray(raw.estimated) ? raw.estimated.map(String) : [],
+    ownerId: raw.ownerId ? String(raw.ownerId) : null,
   };
 }
 

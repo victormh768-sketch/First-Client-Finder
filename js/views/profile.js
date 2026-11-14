@@ -40,6 +40,7 @@ export function renderProfile() {
       h('button', { class: 'btn primary', onclick: () => navigate('plans') }, t('plans.see'))),
     section(t('profile.language'), h('div', { class: 'picks' }, LANGS.map((l) => h('button', { class: 'pick' + (getLang() === l.code ? ' on' : ''), onclick: () => { setLang(l.code); ctx.rerender(); } }, l.label)))),
     accountSection(),
+    cloud.isConfigured() && ctx.user ? section(t('co.link.title'), h('p', { class: 'muted small' }, t('co.link.sub')), h('button', { class: 'btn ghost', onclick: () => navigate('company') }, icon('target', 18), t('co.link.btn'))) : null,
     section(t('profile.data'),
       h('p', { class: 'muted small' }, t('profile.data.sub')),
       h('div', { class: 'row wrap' },
