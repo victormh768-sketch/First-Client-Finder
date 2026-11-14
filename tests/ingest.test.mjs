@@ -131,7 +131,7 @@ const json = (data) => ({ ok: true, status: 200, json: async () => data, text: a
 
 function mockHnFetch() {
   return async (url) => {
-    if (url.includes('author_whoishiring')) return json({ hits: [{ objectID: '900', title: 'Ask HN: Freelancer? Seeking freelancer? (November 2026)', created_at: iso(10) }] });
+    if (url.includes('tags=story&')) return json({ hits: [{ objectID: '900', title: 'Ask HN: Freelancer? Seeking freelancer? (November 2026)', created_at: iso(10) }] });
     if (url.includes('story_900')) {
       return json({ nbPages: 1, hits: [
         { objectID: '1', parent_id: 900, created_at: iso(2), comment_text: '<p>SEEKING FREELANCER | Remote | Video editor</p><p>We need someone to edit 8 short product videos with subtitles. Budget $400 fixed price. No experience needed, send examples.</p>' },
@@ -241,8 +241,34 @@ test('registro: ninguna fuente que requiera aprobación nace activada', () => {
 });
 
 test('HN: un hilo antiguo no se importa como si fuera actual', async () => {
-  const f = async (url) => (url.includes('author_whoishiring')
+  const f = async (url) => (url.includes('tags=story&')
     ? json({ hits: [{ objectID: '900', title: 'Ask HN: Freelancer? Seeking freelancer? (October 2025)', created_at: iso(400) }] })
     : { ok: false, status: 404, json: async () => ({}) });
   await assert.rejects(runSource({ source: getSource('hn-freelance'), now: NOW, fetch: f }), (e) => e.code === 'STALE_SOURCE' && /no hay hilo vigente/.test(e.message));
+});
+
+test('HN: elige el hilo más reciente aunque lo publique otra cuenta y venga desordenado', async () => {
+  const seen = [];
+  const f = async (url) => {
+    seen.push(url);
+    if (url.includes('tags=story&')) return json({ hits: [
+      { objectID: '1', title: 'Ask HN: Freelancer? Seeking freelancer? (October 2025)', created_at: iso(400) },
+      { objectID: '2', title: 'Ask HN: Freelancer? Seeking freelancer? (October 2026)', created_at: iso(12) },
+      { objectID: '3', title: 'Ask HN: Who is hiring? (October 2026)', created_at: iso(10) },
+    ] });
+    return json({ nbPages: 1, hits: [] });
+  };
+  await runSource({ source: getSource('hn-freelance'), now: NOW, fetch: f });
+  assert.ok(seen.some((u) => u.includes('story_2')), 'usa el hilo 2');
+  assert.ok(!seen.some((u) => u.includes('author_whoishiring')));
+});
+
+test('RemoteJobs.org: mapea campos, usa el filtro freelance y falla claro si la forma no es la esperada', async () => {
+  let asked = '';
+  const body = { jobs: [{ id: 7, title: 'Need a logo', description: '<p>I need a simple logo. Budget $100.</p>', url: 'https://remotejobs.org/jobs/7', posted_at: iso(2), employment_types: ['freelance'], company: { name: 'X' }, category: 'Design' }, { id: 8, title: 'Sin url' }] };
+  const r = await runSource({ source: getSource('remotejobs'), now: NOW, checkLinks: false, fetch: async (u) => { asked = u; return json(body); }, collect: true });
+  assert.match(asked, /type=freelance/);
+  assert.equal(r.stats.fetched, 1, 'descarta filas sin url');
+  assert.equal(r.rows[0].reviewStatus, 'pending');
+  await assert.rejects(runSource({ source: getSource('remotejobs'), now: NOW, fetch: async () => json({ foo: 1 }) }), /forma de respuesta inesperada/);
 });

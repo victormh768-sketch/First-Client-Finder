@@ -17,10 +17,14 @@ async function getJson(url, f) {
   return res.json();
 }
 
+// El hilo mensual lo publicó durante años la cuenta «whoishiring», pero en 2026 lo publica otra (p. ej. jon_north):
+// por eso NO se filtra por autor. Se buscan las historias con ese título y se elige la más reciente.
 export async function findLatestThread(f) {
-  const data = await getJson(`${BASE}/search_by_date?tags=story,author_whoishiring&query=${encodeURIComponent('Freelancer? Seeking freelancer?')}&hitsPerPage=10`, f);
-  const hit = (data.hits || []).find((h) => THREAD_RE.test(h.title || ''));
-  if (!hit) throw new Error('No se encontró el hilo «Freelancer? Seeking freelancer?» más reciente');
+  const data = await getJson(`${BASE}/search_by_date?tags=story&query=${encodeURIComponent('Freelancer? Seeking freelancer?')}&hitsPerPage=30`, f);
+  const hits = (data.hits || []).filter((h) => THREAD_RE.test(h.title || '') && h.created_at);
+  if (!hits.length) throw new Error('No se encontró ningún hilo «Freelancer? Seeking freelancer?»');
+  hits.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
+  const hit = hits[0];
   return { id: String(hit.objectID), title: hit.title, createdAt: hit.created_at };
 }
 

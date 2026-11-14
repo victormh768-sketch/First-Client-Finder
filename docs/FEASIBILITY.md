@@ -16,7 +16,7 @@ Limitación de la sesión: desde el entorno de desarrollo no hay salida a intern
 | Jobicy | API pública JSON [leído en su README oficial] | Empleo remoto con tipo Freelance/Contract/Part-time | Sin clave; máx. 1 sondeo/hora; mantener Jobicy como fuente y URL canónica; uso en productos propios permitido | No | Gratis | **Adaptador listo, desactivado.** Sin probar en vivo |
 | RemoteOK | API pública JSON | Empleo remoto | Su página legal solo exige enlazar de vuelta; **no** he podido leer el aviso del JSON ni encontré cláusula sobre API/automatización [sin verificar] | No | Gratis | **No añadido**: términos sin confirmar |
 | Arbeitnow | API pública JSON sin clave | Empleo de empresas europeas (ATS) | No declara límites ni atribución; un tercero indica que piden enlace [sin verificar] | No | Gratis | **No añadido**: es empleo tradicional, sin campo freelance |
-| remotejobs.org | API pública sin clave, <200 req/h/IP, enlace visible | Empleo remoto con filtros freelance/contract | Página de términos **no leída** [sin verificar] | No | Gratis | **Candidata**: revisar términos y probar en vivo |
+| RemoteJobs.org | API pública v1 sin clave, `type=freelance` [leído en su página de desarrolladores] | Empleo remoto filtrable por freelance/contract | <200 peticiones/h/IP; enlace visible; mantener enlace de solicitud. **Sus términos de servicio no se han leído** [sin verificar] | No | Gratis | Adaptador listo, **desactivado**; sin probar en vivo |
 | Hacker News (Algolia) | API pública sin clave | Hilo mensual «Freelancer? Seeking freelancer?» | Límite de peticiones y términos **no verificados** (la cifra de ~10.000/h es de memoria, no confirmada) | No | Gratis | Adaptador listo; sin probar en vivo |
 | We Work Remotely | Feeds RSS | Empleo remoto | No leídas [sin verificar] | No | Gratis | No añadido |
 | Webs de empresas | `schema.org/JobPosting` o feeds propios | Variable | Con permiso del sitio y respetando `robots.txt` | No | Gratis | **Pendiente**, por solicitud de cada empresa |
@@ -41,3 +41,5 @@ Mientras tanto: el usuario puede **pegar el enlace o el texto** de una publicaci
 ## Dónde corre la ingesta
 
 En una **Edge Function de Supabase** (`sync-sources`) lanzada por programación o por un administrador. Las claves viven como secretos de la función y nunca llegan al navegador. El navegador solo lee oportunidades **aprobadas**.
+
+| Himalayas | API pública sin clave; datos refrescados cada 24 h; `employment_type=Contractor` (no existe «Freelance») [leído en su documentación] | Empleo remoto | Crédito visible a Himalayas, usar su `applicationLink`, **no pasar las ofertas a otros tablones/agregadores** | No | Gratis | Candidata, sin adaptador: encaja mal si First Client Finder se considera agregador |

@@ -4,6 +4,7 @@ import { adapter as hn } from './adapters/hn-freelance.js';
 import { adapter as remotive } from './adapters/remotive.js';
 import { adapter as rss } from './adapters/rss.js';
 import { adapter as jobicy } from './adapters/jobicy.js';
+import { adapter as remotejobs } from './adapters/remotejobs.js';
 import { adapter as reddit } from './adapters/reddit.js';
 import { adapter as linkedin } from './adapters/linkedin.js';
 
@@ -27,6 +28,12 @@ export const SOURCES = [
     legalStatus: 'terms', enabledByDefault: false, minIntervalHours: 12, maxAgeDays: 45, requires: [], config: { count: 100 },
     attribution: 'Fuente: Jobicy. Enlace a la oferta en jobicy.com.',
     notes: 'Condiciones claras (README oficial): máx. 1 sondeo/hora, atribución y URL canónica. Desactivada hasta validar la calidad con la prueba en vivo. Solo Freelance/Contract/Part-time.',
+  },
+  {
+    id: 'remotejobs', name: 'RemoteJobs.org', platform: 'RemoteJobs.org', adapter: remotejobs,
+    legalStatus: 'terms', enabledByDefault: false, minIntervalHours: 12, maxAgeDays: 45, requires: [], config: { type: 'freelance', limit: 50 },
+    attribution: 'Fuente: RemoteJobs.org. Enlace a la oferta en remotejobs.org.',
+    notes: 'API pública sin clave (<200 peticiones/h), filtro type=freelance, enlace visible obligatorio. Sus términos de servicio NO se han leído: no activar en producción hasta revisarlos.',
   },
   {
     id: 'rss-example', name: 'Feed RSS (plantilla)', platform: 'RSS', adapter: rss,

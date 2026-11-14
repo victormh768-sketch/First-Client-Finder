@@ -96,7 +96,7 @@ test('calidad: pipeline añade caducada, enlace roto y duplicada', async () => {
   const hn = getSource('hn-freelance');
   const iso = (d) => new Date(NOW.getTime() - d * 864e5).toISOString();
   const f = async (url) => {
-    if (url.includes('author_whoishiring')) return { ok: true, status: 200, json: async () => ({ hits: [{ objectID: '900', title: 'Ask HN: Freelancer? Seeking freelancer? (X)', created_at: iso(5) }] }) };
+    if (url.includes('tags=story&')) return { ok: true, status: 200, json: async () => ({ hits: [{ objectID: '900', title: 'Ask HN: Freelancer? Seeking freelancer? (X)', created_at: iso(5) }] }) };
     if (url.includes('story_900')) return { ok: true, status: 200, json: async () => ({ nbPages: 1, hits: [
       { objectID: '5', parent_id: 900, created_at: iso(60), comment_text: '<p>SEEKING FREELANCER | Logo</p><p>We need a logo designer for our shop. Budget €150.</p>' },
       { objectID: '6', parent_id: 900, created_at: iso(1), comment_text: '<p>SEEKING FREELANCER | Video</p><p>We need a video editor for 5 short videos. Budget $200.</p>' },
