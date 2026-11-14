@@ -17,7 +17,7 @@ Las empresas se registran, publican lo que necesitan y las personas que empiezan
 
 ## Puesta en marcha (tu propio proyecto de Supabase)
 1. Crea un proyecto nuevo (NO uses el de Domino Planner).
-2. SQL Editor: ejecuta en orden `supabase/schema.sql`, `supabase/migrations/002_ingestion.sql`, `supabase/migrations/003_company_requests.sql`.
+2. SQL Editor: ejecuta en orden `supabase/schema.sql`, `supabase/migrations/002_ingestion.sql`, `003_company_requests.sql` y `004_hardening.sql`.
 3. Hazte administrador: `insert into public.admins (user_id) select id from auth.users where email = 'tu@correo.com';`
 4. Pon la URL y la clave anon en `js/config.js` y despliega.
 5. Authentication → activa registro por correo.
