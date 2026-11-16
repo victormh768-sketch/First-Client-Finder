@@ -51,11 +51,15 @@ export function renderProfile() {
 
 function accountSection() {
   const title = h('h3', null, t('account.title'));
+  const status = h('p', { class: 'muted small', role: 'status' }, t('account.checking'));
+  if (cloud.isConfigured()) {
+    cloud.ping().then((r) => { status.textContent = r.ok ? t('account.connected') : t('account.offline', { err: r.error }); });
+  }
   if (!cloud.isConfigured()) {
     return h('section', { class: 'card' }, title, h('p', { class: 'muted small' }, icon('info', 14), ' ', t('account.local')));
   }
   if (ctx.user) {
-    return h('section', { class: 'card' }, title,
+    return h('section', { class: 'card' }, title, status,
       h('p', null, t('account.signedin', { email: ctx.user.email })),
       h('div', { class: 'row wrap' },
         h('button', { class: 'btn ghost', onclick: async () => { await cloud.signOut(); ctx.user = null; ctx.isAdmin = false; ctx.rerender(); } }, t('account.signout')),
@@ -65,9 +69,10 @@ function accountSection() {
   const pass = h('input', { class: 'input', type: 'password', autocomplete: 'current-password', minlength: '8', required: true });
   const run = (fn, okKey) => async (e) => {
     e.preventDefault();
-    try { await fn(email.value.trim(), pass.value); toast(t(okKey)); } catch (err) { toast(err.message || t('account.error'), 'err'); }
+    if (!email.value.trim() || pass.value.length < 8) { toast(t('account.invalid'), 'err'); return; }
+    try { await fn(email.value.trim(), pass.value); toast(t(okKey)); } catch (err) { toast(/rate limit/i.test(err.message || '') ? t('account.ratelimit') : (err.message || t('account.error')), 'err'); }
   };
-  return h('section', { class: 'card' }, title,
+  return h('section', { class: 'card' }, title, status,
     h('p', { class: 'muted small' }, t('account.sub')),
     h('form', { class: 'stack', onsubmit: run(cloud.signIn, 'account.ok.in') },
       field(t('account.email'), email), field(t('account.password'), pass, t('account.password.hint')),

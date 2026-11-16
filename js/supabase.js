@@ -15,6 +15,16 @@ export async function getClient() {
   return client;
 }
 
+// Comprueba que la nube responde (lectura pública de 1 fila). Devuelve { ok, error }.
+export async function ping() {
+  if (!isConfigured()) return { ok: false, error: 'no_config' };
+  try {
+    const c = await getClient();
+    const { error } = await c.from('opportunities').select('id').limit(1);
+    return error ? { ok: false, error: error.message } : { ok: true };
+  } catch (e) { return { ok: false, error: String(e?.message || e) }; }
+}
+
 // ---- auth ----
 export async function getUser() {
   const c = await getClient();

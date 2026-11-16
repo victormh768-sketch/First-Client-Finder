@@ -107,6 +107,7 @@ const es = {
   'account.title': 'Cuenta', 'account.local': 'Modo local: tus datos solo están en este dispositivo. Configura Supabase para activar las cuentas.',
   'account.sub': 'Inicia sesión para sincronizar tus datos entre dispositivos.', 'account.signedin': 'Sesión iniciada como {email}', 'account.signout': 'Cerrar sesión',
   'account.email': 'Correo electrónico', 'account.password': 'Contraseña', 'account.password.hint': 'Mínimo 8 caracteres', 'account.signin': 'Entrar', 'account.signup': 'Crear cuenta',
+  'account.checking': 'Comprobando conexión con la nube…', 'account.connected': '✓ Conectado a la nube.', 'account.offline': '✗ No se pudo conectar con la nube: {err}', 'account.invalid': 'Escribe un correo y una contraseña de al menos 8 caracteres', 'account.ratelimit': 'Demasiados intentos o correos enviados. Espera unos minutos y vuelve a probar.',
   'account.ok.in': 'Sesión iniciada', 'account.ok.up': 'Cuenta creada. Revisa tu correo si hay que confirmarla.', 'account.error': 'No se pudo completar la acción',
 
   'plans.title': 'Planes', 'plans.sub': 'Empieza gratis. PRO te da más oportunidades y herramientas.', 'plans.see': 'Ver planes', 'plans.current': 'Plan actual',
@@ -326,6 +327,7 @@ const en = {
   'account.title': 'Account', 'account.local': 'Local mode: your data only lives on this device. Configure Supabase to enable accounts.',
   'account.sub': 'Sign in to sync your data across devices.', 'account.signedin': 'Signed in as {email}', 'account.signout': 'Sign out',
   'account.email': 'Email', 'account.password': 'Password', 'account.password.hint': 'At least 8 characters', 'account.signin': 'Sign in', 'account.signup': 'Create account',
+  'account.checking': 'Checking cloud connection…', 'account.connected': '✓ Connected to the cloud.', 'account.offline': '✗ Could not reach the cloud: {err}', 'account.invalid': 'Enter an email and a password of at least 8 characters', 'account.ratelimit': 'Too many attempts or emails sent. Wait a few minutes and try again.',
   'account.ok.in': 'Signed in', 'account.ok.up': 'Account created. Check your email if confirmation is needed.', 'account.error': 'Couldn’t complete the action',
 
   'plans.title': 'Plans', 'plans.sub': 'Start free. PRO gives you more opportunities and tools.', 'plans.see': 'See plans', 'plans.current': 'Current plan',
